@@ -14,7 +14,7 @@ Sega Genesis YM2612 emulator copyright (C) 2002 Stephane Dallongeville, released
 the LGPL.
 
 Changelog:
- - Changes from v0.03 to v0.02
+ - Changes from v0.02 to v0.03
    - Seeking implemented! It can take a few seconds for the audio to actually change, but
      as a bonus, seeking to 100% on a multi-track file functions as a skip-to-next, which
      is helpful while full controllable multi-track is still not here.
