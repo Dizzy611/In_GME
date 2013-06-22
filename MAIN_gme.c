@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "in2.h"
 
@@ -42,7 +43,6 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lp
 #define NCH 2
 #define SAMPLERATE 44100
 #define BPS 16
-
 
 char lastfn[MAX_PATH];	// currently playing file (used for getting info on the current file)
 
@@ -95,7 +95,11 @@ __declspec( dllexport ) In_Module * winampGetInModule2();
 In_Module mod = 
 {
 	IN_VER,	// defined in IN2.H
-	"Game_Music_Emu 0.6.0 Winamp Plugin "
+#ifdef DEBUG
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.1 DEBUG "
+#else
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.1 "
+#endif
 	// winamp runs on both alpha systems and x86 ones. :)
 #ifdef __alpha
 	"(AXP)"
@@ -156,21 +160,50 @@ void about(HWND hwndParent)
 		"About Game_Music_Emu Plugin",MB_OK);
 }
 
+#ifdef DEBUG
+FILE * fp;
+#endif
+
 void init() { 
+#ifdef DEBUG
+	time_t now = time(0);
+	char out[9];
+	strftime(out, 9, "%Y%m%d", localtime(&now));
+	char filename[22];
+	sprintf(filename, "in_gme-debug-%s", out);
+	fp = fopen(filename, "w+");
+#endif
 	emu = NULL;
 	accurate = TRUE;
 }
 
+void debugmessage(char *message) {
+#ifdef DEBUG
+	fprintf(fp, "%s", message);
+#endif
+	return;
+}
+
 void quit() { 
+	debugmessage("FUNCTION: quit()");
 	emu = NULL;
+#ifdef DEBUG
+	debugmessage("END FUNCTION: quit()");
+	debugmessage("END LOG");
+	fclose(fp);
+#endif
+	return;
 }
 
 int isourfile(const char *fn) { 
+	debugmessage("FUNCTION: isourfile()");
+	debugmessage("END FUNCTION: isourfile()");
 	return 0; 
 } 
 
 int play(const char *fn) 
 { 
+	debugmessage("FUNCTION: play()");
 	int maxlatency;
 	int thread_id;
 
@@ -184,10 +217,8 @@ int play(const char *fn)
 
 	file_length=GetFileSize(input_file,NULL);
 	
-	// And now we don't need the handle anymore.
 	CloseHandle(input_file);		
 	
-	// TODO: Make sure this GME loading code is correct.
 	gme_err_t temperr = gme_open_file(fn,&emu,SAMPLERATE);
 	if (temperr != 0) // error opening file
 	{
@@ -214,14 +245,7 @@ int play(const char *fn)
 
 	strcpy(lastfn,fn);
 
-	// -1 and -1 are to specify buffer and prebuffer lengths.
-	// -1 means to use the default, which all input plug-ins should
-	// really do.
 	maxlatency = mod.outMod->Open(SAMPLERATE,NCH,BPS, -1,-1); 
-
-	// maxlatency is the maxium latency between a outMod->Write() call and
-	// when you hear those samples. In ms. Used primarily by the visualization
-	// system.
 
 	if (maxlatency < 0) // error opening device
 	{
@@ -234,22 +258,20 @@ int play(const char *fn)
 	mod.VSASetInfo(SAMPLERATE,NCH);
 	mod.outMod->SetVolume(-666); 
 
-	// launch decode thread
 	killDecodeThread=0;
 	thread_handle = (HANDLE) 
 		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE) DecodeThread,NULL,0,&thread_id);
-	
+	debugmessage("END FUNCTION: play()");
 	return 0; 
 }
 
-// standard pause implementation
 void pause() { paused=1; mod.outMod->Pause(1); }
 void unpause() { paused=0; mod.outMod->Pause(0); }
 int ispaused() { return paused; }
 
 
-// stop playing.
 void stop() { 
+	debugmessage("FUNCTION: stop()");
 	if (thread_handle != INVALID_HANDLE_VALUE)
 	{
 		killDecodeThread=1;
@@ -263,45 +285,36 @@ void stop() {
 		thread_handle = INVALID_HANDLE_VALUE;
 	}
 
-	// close output system
 	mod.outMod->Close();
 
-	// deinitialize visualization
 	mod.SAVSADeInit();
 	
 
-	// CHANGEME! Write your own file closing code here
-	if (input_file != INVALID_HANDLE_VALUE)
-	{
-		CloseHandle(input_file);
-		input_file=INVALID_HANDLE_VALUE;
-	}
-
+	gme_delete(emu);
+	emu=NULL;
+	debugmessage("END FUNCTION: stop()");
+	return;
 }
 
 
-// returns length of playing track
 int getlength() {
+	debugmessage("FUNCTION: getlength()");
+	debugmessage("END FUNCTION: getlength()");
 	return track_length;
 }
 
 
-// returns current output position, in ms.
-// you could just use return mod.outMod->GetOutputTime(),
-// but the dsp plug-ins that do tempo changing tend to make
-// that wrong.
 int getoutputtime() { 
-	return decode_pos_ms+
-		(mod.outMod->GetOutputTime()-mod.outMod->GetWrittenTime()); 
+	debugmessage("FUNCTION: getoutputtime()");
+	debugmessage("END FUNCTION: getoutputtime()");
+	return gme_tell(emu); 
 }
 
-
-// called when the user releases the seek scroll bar.
-// usually we use it to set seek_needed to the seek
-// point (seek_needed is -1 when no seek is needed)
-// and the decode thread checks seek_needed.
 void setoutputtime(int time_in_ms) { 
-	return; // We can't handle seeking right now
+	debugmessage("FUNCTION: setoutputtime()");
+	gme_seek(emu, time_in_ms);
+	debugmessage("END FUNCTION: setoutputtime()");
+	return;
 }
 
 
@@ -310,8 +323,6 @@ void setvolume(int volume) { mod.outMod->SetVolume(volume); }
 
 void setpan(int pan) { mod.outMod->SetPan(pan); }
 
-// this gets called when the use hits Alt+3 to get the file info.
-// if you need more info, ask me :)
 
 int infoDlg(const char *fn, HWND hwnd)
 {
@@ -320,15 +331,9 @@ int infoDlg(const char *fn, HWND hwnd)
 }
 
 
-// this is an odd function. it is used to get the title and/or
-// length of a track.
-// if filename is either NULL or of length 0, it means you should
-// return the info of lastfn. Otherwise, return the information
-// for the file in filename.
-// if title is NULL, no title is copied into it.
-// if length_in_ms is NULL, no length is copied into it.
 void getfileinfo(const char *filename, char *title, int *length_in_ms)
 {
+	debugmessage("FUNCTION: getfileinfo()");
 	if (!filename || !*filename)  // currently playing file
 	{
 		if (length_in_ms) *length_in_ms=getlength();
@@ -346,7 +351,7 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 	{
 		if (length_in_ms)
 		{
-			*length_in_ms=-1000; // the default is unknown file length (-1000), and we can't return the length of a non-opened file yet.
+			*length_in_ms=-1000; // the default is unknown file length (-1000), and we can't return the length of a non-opened file yet
 		}
 		if (title) // get non path portion of filename
 		{
@@ -355,27 +360,17 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 			strcpy(title,++p);
 		}
 	}
+	debugmessage("END FUNCTION: getfileinfo()");
 }
 
 
 void eq_set(int on, char data[10], int preamp) 
-{ 
-	// most plug-ins can't even do an EQ anyhow.. I'm working on writing
-	// a generic PCM EQ, but it looks like it'll be a little too CPU 
-	// consuming to be useful :)
-	// if you _CAN_ do EQ with your format, each data byte is 0-63 (+20db <-> -20db)
-	// and preamp is the same. 
+{ 	
+	// TODO: See if GME's equalization and Winamp's are compatible. 
+        //       For now, do nothing.
+	return;
 }
 
-
-// render 576 samples into buf. 
-// this function is only used by DecodeThread. 
-
-// note that if you adjust the size of sample_buffer, for say, 1024
-// sample blocks, it will still work, but some of the visualization 
-// might not look as good as it could. Stick with 576 sample blocks
-// if you can, and have an additional auxiliary (overflow) buffer if 
-// necessary.. 
 int get_576_samples(char *buf)
 {
 	if (gme_track_ended( emu )) {
@@ -398,62 +393,44 @@ int get_576_samples(char *buf)
 
 DWORD WINAPI DecodeThread(LPVOID b)
 {
-	int done=0; // set to TRUE if decoding has finished
+	int done=0;
 	while (!killDecodeThread) 
 	{
-		if (done) // done was set to TRUE during decoding, signaling eof
+		if (done)
 		{
-			mod.outMod->CanWrite();		// some output drivers need CanWrite
-									    // to be called on a regular basis.
-
+			mod.outMod->CanWrite();
 			if (!mod.outMod->IsPlaying()) 
 			{
-				// we're done playing, so tell Winamp and quit the thread.
 				PostMessage(mod.hMainWindow,WM_WA_MPEG_EOF,0,0);
-				return 0;	// quit thread
+				return 0;
 			}
-			Sleep(10);		// give a little CPU time back to the system.
+			Sleep(10);
 		}
 		else if (mod.outMod->CanWrite() >= ((576*NCH*(BPS/8))*(mod.dsp_isactive()?2:1)))
-			// CanWrite() returns the number of bytes you can write, so we check that
-			// to the block size. the reason we multiply the block size by two if 
-			// mod.dsp_isactive() is that DSP plug-ins can change it by up to a 
-			// factor of two (for tempo adjustment).
 		{	
-			int l=576*NCH*(BPS/8);			       // block length in bytes
+			int l=576*NCH*(BPS/8);
 			static char sample_buffer[576*NCH*(BPS/8)*2]; 
-												   // sample buffer. twice as 
-												   // big as the blocksize
-
-			l=get_576_samples(sample_buffer);	   // retrieve samples
-			if (!l)			// no samples means we're at eof
+			l=get_576_samples(sample_buffer);
+			if (!l)
 			{
 				done=1;
-				gme_delete(emu);
-				emu=NULL;
 			}
-			else	// we got samples!
+			else
 			{
-				// give the samples to the vis subsystems
 				mod.SAAddPCMData((char *)sample_buffer,NCH,BPS,decode_pos_ms);	
 				mod.VSAAddPCMData((char *)sample_buffer,NCH,BPS,decode_pos_ms);
-				// adjust decode position variable
 				decode_pos_ms+=(576*1000)/SAMPLERATE;	
 
-				// if we have a DSP plug-in, then call it on our samples
 				if (mod.dsp_isactive()) 
 					l=mod.dsp_dosamples(
 						(short *)sample_buffer,l/NCH/(BPS/8),BPS,NCH,SAMPLERATE
-					  ) // dsp_dosamples
+					  )
 					  *(NCH*(BPS/8));
 
-				// write the pcm data to the output system
 				mod.outMod->Write(sample_buffer,l);
 			}
 		}
 		else Sleep(20); 
-		// if we can't write data, wait a little bit. Otherwise, continue 
-		// through the loop writing more data (without sleeping)
 	}
 	return 0;
 }
