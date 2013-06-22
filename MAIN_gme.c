@@ -359,6 +359,9 @@ void setoutputtime(int time_in_ms) {
 	debugmessage("FUNCTION: setoutputtime()");
 	pause();
 	gme_seek(emu, time_in_ms);
+	// Fix for possible upstream bug where, after seeking during a fadeout, the fadeout is unset and the track loops indefinitely.
+	// We just re-set the fade after any seek. May be an upstream bug, but may be intended behavior.
+	gme_set_fade(emu, track_length-8000);
 	unpause();
 	debugmessage("END FUNCTION: setoutputtime()");
 	return;

@@ -3,17 +3,23 @@ In_GME
 
 Winamp Plugin for Game-Music-Emu
 
-Current Version: v0.03 Pre-Alpha
+Current Version: v0.04 Pre-Alpha
 
-In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of license in MAIN_gme.c
+In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of
+license in MAIN_gme.c
 
 Game_Music_Emu library copyright (C) 2003-2009 Shay Green, released under the 
-LGPL, license available in libgme directory as license.txt, source code (unmodified from the original) available at https://code.google.com/p/game-music-emu/.
+LGPL, license available in libgme directory as license.txt, source code (unmodified 
+from the original) available at https://code.google.com/p/game-music-emu/.
 
 Sega Genesis YM2612 emulator copyright (C) 2002 Stephane Dallongeville, released under 
 the LGPL.
 
 Changelog:
+ - Changes from v0.03 to v0.04
+   - Worked around a potential upstream bug regarding seeking: If you seek backwards during a        fade-out, the fade-out is unset, causing the track to then loop indefinitely. I thus
+     re-set the fade-out during every seek. I can see this potentially being intended behavior, 
+     so I'm debating whether to report it upstream.
  - Changes from v0.02 to v0.03
    - Seeking implemented! It can take a few seconds for the audio to actually change, but
      as a bonus, seeking to 100% on a multi-track file functions as a skip-to-next, which
