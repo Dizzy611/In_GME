@@ -113,7 +113,7 @@ In_Module mod =
 	"SPC\0SNES SPC700 Sound File (*.SPC)\0VGM\0Sega Genesis/MD/SMS/BBC Micro VGM File (*.VGM)\0AY\0ZX Spectrum/Amstrad CPC Sound File (*.AY)\0GBS\0Game Boy Sound File (*.GBS)\0HES\0TG-16/PC-Engine Sound File (*.HES)\0KSS\0MSX Sound File (*.KSS)\0NSF\0NES Sound File (*.NSF)\0SAP\0Atari Sound File (*.SAP)\0GYM\0Sega Genesis Sound File (*.GYM)\0"
 	// this is a double-null limited list. "EXT\0Description\0EXT\0Description\0" etc.
 	,
-	0,	// is_seekable
+	1,	// is_seekable
 	1,	// uses output plug-in system
 	config,
 	about,
@@ -239,6 +239,7 @@ int play(const char *fn)
 	if ( track_length <= 0 )
 		track_length = (long) (2.5 * 60 * 1000);
 	gme_set_fade(emu, track_length);
+	track_length = track_length + 8000; // Fade takes 8 seconds to process, increasing track_length by 8000 makes winamp line up.
 
 	
 	paused=0;
@@ -279,6 +280,7 @@ void track_change() {
 	if ( track_length <= 0 )
 		track_length = (long) (2.5 * 60 * 1000);
 	gme_set_fade(emu, track_length);
+	track_length = track_length + 8000; // see play()
 	decode_pos_ms = 0;
 	PostMessage(mod.hMainWindow,WM_WA_IPC,0,IPC_UPDTITLE);
 	Sleep(10);
@@ -355,7 +357,9 @@ int getoutputtime() {
 
 void setoutputtime(int time_in_ms) { 
 	debugmessage("FUNCTION: setoutputtime()");
+	pause();
 	gme_seek(emu, time_in_ms);
+	unpause();
 	debugmessage("END FUNCTION: setoutputtime()");
 	return;
 }

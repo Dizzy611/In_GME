@@ -3,7 +3,7 @@ In_GME
 
 Winamp Plugin for Game-Music-Emu
 
-Current Version: v0.02 Pre-Alpha
+Current Version: v0.03 Pre-Alpha
 
 In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of license in MAIN_gme.c
 
@@ -14,19 +14,16 @@ Sega Genesis YM2612 emulator copyright (C) 2002 Stephane Dallongeville, released
 the LGPL.
 
 Changelog:
-
+ - Changes from v0.03 to v0.02
+   - Seeking implemented! It can take a few seconds for the audio to actually change, but
+     as a bonus, seeking to 100% on a multi-track file functions as a skip-to-next, which
+     is helpful while full controllable multi-track is still not here.
  - Changes from v0.01 to v0.02
    - Multi-Track support implemented! No control currently available, but it will play
      your multi-track files track-by-track. Tested with Mega Man 2! It works great and 
      I'm so happy to even get this level of support done.
 
 Features not yet implemented:
-
- - Seeking:
-   - Should actually be possible with current code, but I'm not willing
-     to turn it on yet as I want to make sure its bug-free without being
-     able to seek first, as I'm not sure what the delay in seek from GME
-     will do to Winamp
 
  - Controllable Multi-Track:
    - That is, multiple tracks in one file, like NSF. Currently it'll 
