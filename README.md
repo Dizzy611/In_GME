@@ -5,7 +5,7 @@ Winamp Plugin for Game-Music-Emu
 
 Current Version: v0.02 Pre-Alpha
 
-In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license.
+In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of license in MAIN_gme.c
 
 Game_Music_Emu library copyright (C) 2003-2009 Shay Green, released under the 
 LGPL, license available in libgme directory as license.txt, source code (unmodified from the original) available at https://code.google.com/p/game-music-emu/.
