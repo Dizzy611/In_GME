@@ -3,9 +3,16 @@ In_GME
 
 Winamp Plugin for Game-Music-Emu
 
-Current Version: v0.01 Pre-Alpha
+Current Version: v0.02 Pre-Alpha
 
 Currently in a pre-alpha state but usable!
+
+Changelog:
+
+ - Changes from v0.01 to v0.02
+   - Multi-Track support implemented! No control currently available, but it will play
+     your multi-track files track-by-track. Tested with Mega Man 2! It works great and 
+     I'm so happy to even get this level of support done.
 
 Features not yet implemented:
 
@@ -15,12 +22,14 @@ Features not yet implemented:
      able to seek first, as I'm not sure what the delay in seek from GME
      will do to Winamp
 
- - Multi-Track:
+ - Controllable Multi-Track:
    - That is, multiple tracks in one file, like NSF. Currently it'll 
-     only play the first track from these files, I need to figure out 
-     how to handle this, as I can't really see a way to do so in the general 
-     winamp Input Plugin framework. Basically, I need to see how in_nsf does 
-     this
+     play all the tracks from these files, one after another, while updating the title,
+     but there's no way to go back and forward tracks. I either need to hook directly into
+     Winamp's next/previous buttons to do this or provide my own in a seperate dialog
+     that opens up when you play a multi-track file. The latter sounds cleaner and easier
+     to implement, if not quite as convenient. It is also how the only open source NSF 
+     player whose code I could understand, NotSo Fatso, does this.
 
  - Configuration:
    - Basically only to configure accuracy and stereo depth, and maybe 

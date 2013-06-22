@@ -23,6 +23,7 @@
 #include <time.h>
 
 #include "in2.h"
+#include "wa_ipc.h"
 
 #include "gme.h"
 
@@ -265,6 +266,48 @@ int play(const char *fn)
 	return 0; 
 }
 
+void track_change() {
+	pause();
+	gme_start_track( emu, track );
+	gme_free_info( track_info );
+	track_info = NULL;
+	gme_track_info( emu, &track_info, track );
+	track_length = track_info->length;
+	if ( track_length <= 0 ) {
+		track_length = track_info->intro_length + track_info->loop_length * 2;
+	}	
+	if ( track_length <= 0 )
+		track_length = (long) (2.5 * 60 * 1000);
+	gme_set_fade(emu, track_length);
+	decode_pos_ms = 0;
+	PostMessage(mod.hMainWindow,WM_WA_IPC,0,IPC_UPDTITLE);
+	Sleep(10);
+	unpause();
+}
+
+int next_track() {
+	track++;
+	if ( track >= track_count ) {
+			track--;
+			return 0;
+	} else {
+		track_change();
+		return 1;
+	}
+}
+
+int prev_track() {
+	track--;
+	if ( track < 0 ) {
+		track++;
+		return 0;
+	} else {
+		track_change();
+		return 1;
+	}
+}
+
+
 void pause() { paused=1; mod.outMod->Pause(1); }
 void unpause() { paused=0; mod.outMod->Pause(0); }
 int ispaused() { return paused; }
@@ -401,8 +444,13 @@ DWORD WINAPI DecodeThread(LPVOID b)
 			mod.outMod->CanWrite();
 			if (!mod.outMod->IsPlaying()) 
 			{
-				PostMessage(mod.hMainWindow,WM_WA_MPEG_EOF,0,0);
-				return 0;
+				if (track+1 == track_count) {
+					PostMessage(mod.hMainWindow,WM_WA_MPEG_EOF,0,0);
+					return 0;
+				} else { 
+					next_track();
+					done=0;
+				}
 			}
 			Sleep(10);
 		}
