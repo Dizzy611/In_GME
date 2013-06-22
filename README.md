@@ -5,7 +5,13 @@ Winamp Plugin for Game-Music-Emu
 
 Current Version: v0.02 Pre-Alpha
 
-Currently in a pre-alpha state but usable!
+In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license.
+
+Game_Music_Emu library copyright (C) 2003-2009 Shay Green, released under the 
+LGPL, license available in libgme directory as license.txt, source code (unmodified from the original) available at https://code.google.com/p/game-music-emu/.
+
+Sega Genesis YM2612 emulator copyright (C) 2002 Stephane Dallongeville, released under 
+the LGPL.
 
 Changelog:
 
