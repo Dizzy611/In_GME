@@ -2,11 +2,11 @@ In_GME
 ======
 
 Installer now available for public testing! Please be aware this is still very much an early alpha. 
-If that's okay with you, Click "In_GME_v0_05.exe" then "Raw" to download.
+If that's okay with you, Click "In_GME_v0_06.exe" then "Raw" to download.
 
 Winamp Plugin for Game-Music-Emu
 
-Current Version: v0.05 Pre-Alpha
+Current Version: v0.06 Pre-Alpha
 
 In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of
 license in MAIN_gme.c
@@ -19,6 +19,11 @@ Sega Genesis YM2612 emulator copyright (C) 2002 Stephane Dallongeville, released
 the LGPL.
 
 Changelog:
+ - Changes from v0.05 to v0.06
+   - Basic track information (title, length, number of tracks, etc) will now show for all in_gme
+     tracks in the list, and will not disappear when you try to use the (currently non-existant)
+     info dialog. I managed to get this working by creating a temporary emu instance and freeing it
+     at the end of the info grab.
  - Changes from v0.04 to v0.05
    - Fixed visualizations by re-working current position/seeking to better fit with the way
      winamp expects them to work. Seeking should also be faster and cleaner now. Also, removed

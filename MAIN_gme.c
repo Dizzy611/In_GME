@@ -98,9 +98,9 @@ In_Module mod =
 {
 	IN_VER,	// defined in IN2.H
 #ifdef DEBUG
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.05 DEBUG "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.06 DEBUG "
 #else
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.05 "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.06 "
 #endif
 	// winamp runs on both alpha systems and x86 ones. :)
 #ifdef __alpha
@@ -389,16 +389,35 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 	}
 	else // some other file
 	{
+		Music_Emu* temp_emu; // create a temporary emu instance
+		gme_info_t* temp_track_info; // create a temporary track_info instance
+		long temp_track_length;
+		temp_emu=NULL;
+		temp_track_info=NULL; // if we screw up we want this to show as a null pointer dereference so that we know exactly where and how
+		gme_open_file(filename,&temp_emu,SAMPLERATE);
+		gme_track_info(temp_emu,&temp_track_info,0);
+		temp_track_length = temp_track_info->length;
+		if ( temp_track_length <= 0 ) {
+			temp_track_length = temp_track_info->intro_length + temp_track_info->loop_length * 2;
+		}	
+		if ( temp_track_length <= 0 )
+			temp_track_length = (long) (2.5 * 60 * 1000);
+		temp_track_length = temp_track_length + 8000;
 		if (length_in_ms)
 		{
-			*length_in_ms=-1000; // the default is unknown file length (-1000), and we can't return the length of a non-opened file yet
+			*length_in_ms=temp_track_length; 
 		}
-		if (title) // get non path portion of filename
+		if (title) 
 		{
-			const char *p=filename+strlen(filename);
-			while (*p != '\\' && p >= filename) p--;
-			strcpy(title,++p);
+			const char* game = temp_track_info->game;
+			if ( !*game ) {
+				sprintf(title, "%d/%d %s", 1, gme_track_count(temp_emu), temp_track_info->song);
+			} else {
+				sprintf(title, "%s: %d/%d %s", game, 1, gme_track_count(temp_emu), temp_track_info->song);
+			}
 		}
+		gme_free_info(temp_track_info);
+		gme_delete(temp_emu);
 	}
 	debugmessage("END FUNCTION: getfileinfo()");
 }
