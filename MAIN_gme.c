@@ -51,6 +51,7 @@ int file_length;		// file length, in bytes
 int decode_pos_ms;		// current decoding position, in milliseconds. 
 						// Used for correcting DSP plug-in pitch changes
 int paused;				// are we paused?
+volatile int seek_needed;
 int track;                        // Track within file.
 int track_count;                  // Number of tracks within file
 long track_length;			  // Length of current track in ms
@@ -97,9 +98,9 @@ In_Module mod =
 {
 	IN_VER,	// defined in IN2.H
 #ifdef DEBUG
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.04 DEBUG "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.05 DEBUG "
 #else
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.04 "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.05 "
 #endif
 	// winamp runs on both alpha systems and x86 ones. :)
 #ifdef __alpha
@@ -180,16 +181,14 @@ void init() {
 
 void debugmessage(char *message) {
 #ifdef DEBUG
-	fprintf(fp, "%s", message);
+	fprintf(fp, "%s\n", message);
 #endif
 	return;
 }
 
 void quit() { 
-	debugmessage("FUNCTION: quit()");
 	emu = NULL;
 #ifdef DEBUG
-	debugmessage("END FUNCTION: quit()");
 	debugmessage("END LOG");
 	fclose(fp);
 #endif
@@ -197,8 +196,7 @@ void quit() {
 }
 
 int isourfile(const char *fn) { 
-	debugmessage("FUNCTION: isourfile()");
-	debugmessage("END FUNCTION: isourfile()");
+	debugmessage("DUMMIED FUNCTION: isourfile()");
 	return 0; 
 } 
 
@@ -244,6 +242,7 @@ int play(const char *fn)
 	
 	paused=0;
 	decode_pos_ms=0;
+	seek_needed=-1;
 
 	strcpy(lastfn,fn);
 
@@ -282,6 +281,7 @@ void track_change() {
 	gme_set_fade(emu, track_length);
 	track_length = track_length + 8000; // see play()
 	decode_pos_ms = 0;
+	seek_needed = -1;
 	PostMessage(mod.hMainWindow,WM_WA_IPC,0,IPC_UPDTITLE);
 	Sleep(10);
 	unpause();
@@ -343,29 +343,19 @@ void stop() {
 
 
 int getlength() {
-	debugmessage("FUNCTION: getlength()");
-	debugmessage("END FUNCTION: getlength()");
 	return track_length;
 }
 
-
+	
 int getoutputtime() { 
-	debugmessage("FUNCTION: getoutputtime()");
-	debugmessage("END FUNCTION: getoutputtime()");
-	return gme_tell(emu); 
+	return decode_pos_ms+
+		(mod.outMod->GetOutputTime()-mod.outMod->GetWrittenTime()); 
 }
 
-void setoutputtime(int time_in_ms) { 
-	debugmessage("FUNCTION: setoutputtime()");
-	pause();
-	gme_seek(emu, time_in_ms);
-	// Fix for possible upstream bug where, after seeking during a fadeout, the fadeout is unset and the track loops indefinitely.
-	// We just re-set the fade after any seek. May be an upstream bug, but may be intended behavior.
-	gme_set_fade(emu, track_length-8000);
-	unpause();
-	debugmessage("END FUNCTION: setoutputtime()");
-	return;
+void setoutputtime(int time_in_ms) {
+	seek_needed=time_in_ms;
 }
+	
 
 
 // standard volume/pan functions
@@ -424,6 +414,7 @@ void eq_set(int on, char data[10], int preamp)
 int get_576_samples(char *buf)
 {
 	if (gme_track_ended( emu )) {
+		debugmessage("Track ends.");
 		return 0; // Song is over.
 	}
 	short temp_buf[1152];
@@ -436,8 +427,6 @@ int get_576_samples(char *buf)
 		buf[buf_position] = (temp_buf[i] >> 8) & 0xff;
 		buf_position++;
 	}
-	char str[10];
-	sprintf(str, "%d", buf_position);
 	return buf_position;
 }
 
@@ -446,6 +435,19 @@ DWORD WINAPI DecodeThread(LPVOID b)
 	int done=0;
 	while (!killDecodeThread) 
 	{
+		if (seek_needed != -1) {
+			done=0;
+			decode_pos_ms = seek_needed;
+			seek_needed=-1;
+			mod.outMod->Flush(decode_pos_ms);
+			pause();
+			gme_seek(emu, decode_pos_ms);
+			// Fix for possible upstream bug where, after seeking during a fadeout, the fadeout is unset and the track loops indefinitely.
+			// We just re-set the fade after any seek. May be an upstream bug, but may be intended behavior.
+			gme_set_fade(emu, track_length-8000);
+			decode_pos_ms = gme_tell(emu);
+			unpause();
+		}
 		if (done)
 		{
 			mod.outMod->CanWrite();
