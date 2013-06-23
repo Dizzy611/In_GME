@@ -57,12 +57,6 @@ Features not yet implemented:
    - Need to see what extra information besides what I expose in the 
      title is available in GME's track_info dealie.
 
-
 Known Bugs:
 
- - Visualization:
-   - Occasionally winamp's visualizer will give up. This only started 
-     happening when I, in preparation for enabling seek, tied the 
-     current position to gme_tell(), so this being out of sync by a 
-     couple samples with winamp's output module is probably the culprit.
-
+ - None at the moment!
