@@ -1,6 +1,9 @@
 In_GME
 ======
 
+Installer now available for public testing! Please be aware this is still very much an early alpha. 
+If that's okay with you, Click "In_GME_v0_05.exe" then "Raw" to download.
+
 Winamp Plugin for Game-Music-Emu
 
 Current Version: v0.05 Pre-Alpha
