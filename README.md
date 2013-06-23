@@ -2,11 +2,11 @@ In_GME
 ======
 
 Installer now available for public testing! Please be aware this is still very much an early alpha. 
-If that's okay with you, Click "In_GME_v0_06.exe" then "Raw" to download.
+If that's okay with you, Click "In_GME_v0_08.exe" then "Raw" to download.
 
 Winamp Plugin for Game-Music-Emu
 
-Current Version: v0.07 Alpha
+Current Version: v0.08 Alpha
 
 In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of
 license in MAIN_gme.c
