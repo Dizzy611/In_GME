@@ -98,9 +98,9 @@ In_Module mod =
 {
 	IN_VER,	// defined in IN2.H
 #ifdef DEBUG
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.06 DEBUG "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.08 DEBUG "
 #else
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.06 "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.08 "
 #endif
 	// winamp runs on both alpha systems and x86 ones. :)
 #ifdef __alpha
@@ -381,9 +381,17 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 		{
 			const char* game = track_info->game;
 			if ( !*game ) {
-				sprintf(title, "%d/%d %s", track+1, track_count, track_info->song);
+				if (track_count > 1) {
+					sprintf(title, "%d/%d %s", track+1, track_count, track_info->song);
+				} else {
+					sprintf(title, "%s", track_info->song);
+				}
 			} else {
-				sprintf(title, "%s: %d/%d %s", game, track+1, track_count, track_info->song);
+				if (track_count > 1) {
+					sprintf(title, "%s: %d/%d %s", game, track+1, track_count, track_info->song);
+				} else {
+					sprintf(title, "%s - %s", game, track_info->song);
+				}
 			}
 		}
 	}
@@ -411,9 +419,17 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 		{
 			const char* game = temp_track_info->game;
 			if ( !*game ) {
-				sprintf(title, "%d/%d %s", 1, gme_track_count(temp_emu), temp_track_info->song);
+				if (track_count > 1) {
+					sprintf(title, "%d/%d %s", 1, gme_track_count(temp_emu), temp_track_info->song);
+				} else {
+					sprintf(title, "%s", temp_track_info->song);
+				}
 			} else {
-				sprintf(title, "%s: %d/%d %s", game, 1, gme_track_count(temp_emu), temp_track_info->song);
+				if (track_count > 1) {
+					sprintf(title, "%s: %d/%d %s", game, 1, gme_track_count(temp_emu), temp_track_info->song);
+				} else {
+					sprintf(title, "%s - %s", game, temp_track_info->song);
+				}
 			}
 		}
 		gme_free_info(temp_track_info);

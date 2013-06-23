@@ -15,8 +15,8 @@
 ; !include "Sections.nsh"
 
 ; common defines for a generic DrO installer :o)
-!define VERSION "0.06"
-!define ALT_VER "0_06"
+!define VERSION "0.08"
+!define ALT_VER "0_08"
 !define PLUG "In_GME Game_Music_Emu 0.6.0 Winamp Plugin"
 !define PLUG_ALT "In_GME"
 !define PLUG_FILE "in_gme"
