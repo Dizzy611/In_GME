@@ -98,9 +98,9 @@ In_Module mod =
 {
 	IN_VER,	// defined in IN2.H
 #ifdef DEBUG
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.08 DEBUG "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.09 DEBUG "
 #else
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.08 "
+	"Game_Music_Emu 0.6.0 Winamp Plugin v0.09 "
 #endif
 	// winamp runs on both alpha systems and x86 ones. :)
 #ifdef __alpha
@@ -419,13 +419,13 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 		{
 			const char* game = temp_track_info->game;
 			if ( !*game ) {
-				if (track_count > 1) {
+				if (gme_track_count(temp_emu) > 1) {
 					sprintf(title, "%d/%d %s", 1, gme_track_count(temp_emu), temp_track_info->song);
 				} else {
 					sprintf(title, "%s", temp_track_info->song);
 				}
 			} else {
-				if (track_count > 1) {
+				if (gme_track_count(temp_emu) > 1) {
 					sprintf(title, "%s: %d/%d %s", game, 1, gme_track_count(temp_emu), temp_track_info->song);
 				} else {
 					sprintf(title, "%s - %s", game, temp_track_info->song);
