@@ -1,19 +1,52 @@
-#include <windows.h>
+// Microsoft Visual C++ generated resource script.
+//
 #include "resource.h"
 
-// Executable version information
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_APPICON             ICON                    "Application.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
 1 VERSIONINFO
-  FILEVERSION 0,0,9,0
-  PRODUCTVERSION 0,0,9,0
-  FILEFLAGSMASK 0x17L
-#ifdef DEBUG
-  FILEFLAGS 0x3L
+ FILEVERSION 0,0,9,0
+ PRODUCTVERSION 0,0,9,0
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x3L
 #else
-  FILEFLAGS 0x2L
+ FILEFLAGS 0x2L
 #endif
-  FILEOS 0x4L
-  FILETYPE 0x2L
-  FILESUBTYPE 0x0L
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
@@ -36,13 +69,54 @@ BEGIN
 END
 
 
-IDD_ABOUTDIALOG DIALOGEX 0, 0, 147, 67
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTDIALOG DIALOGEX 0, 0, 219, 67
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    ICON            IDI_APPICON,IDC_STATIC,7,7,20,20
-    LTEXT           "in_gme Game_Music_Emu 0.6.0 Plugin for Winamp v0.09",IDC_STATIC,34,7,86,8
+    ICON            IDI_APPICON,IDC_STATIC,7,7,21,20
+    LTEXT           "in_gme Game_Music_Emu 0.6.0 Plugin for Winamp v0.09",IDC_STATIC,34,7,185,8
     LTEXT           "©2013 Dylan Morrison",IDC_STATIC,34,17,68,8
     DEFPUSHBUTTON   "OK",IDOK,90,46,50,14,WS_GROUP
 END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
