@@ -54,12 +54,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Dylan Morrison"
             VALUE "FileDescription", "Game_Music_Emu plugin for WinAmp"
-            VALUE "FileVersion", "0, 1, 0, 1"
+            VALUE "FileVersion", "0, 1, 0, 2"
             VALUE "InternalName", "in_gme"
             VALUE "LegalCopyright", "©2013 Dylan Morrison"
             VALUE "OriginalFilename", "in_gme.dll"
             VALUE "ProductName", "in_gme Game_Music_Emu plugin"
-            VALUE "ProductVersion", "0, 1, 0, 1"
+            VALUE "ProductVersion", "0, 1, 0, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -80,9 +80,27 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     ICON            IDI_APPICON,IDC_STATIC,7,7,20,20
-    LTEXT           "in_gme v0.10.1\nA Game_Music_Emu Plugin for Winamp\nBased on libgme 0.6.0",IDC_STATIC,34,7,185,30
+    LTEXT           "in_gme v0.10.2\nA Game_Music_Emu Plugin for Winamp\nBased on libgme 0.6.0",IDC_STATIC,34,7,185,30
     LTEXT           "©2013 Dylan Morrison",IDC_STATIC,34,39,68,8
     DEFPUSHBUTTON   "OK",IDOK,90,46,50,14,WS_GROUP
+END
+
+IDD_CONFIGDIALOG DIALOGEX 0, 0, 214, 100
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Configuration"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "In_GME Configuration",IDC_STATIC,7,7,71,8
+    LTEXT           "Samplerate:",IDC_STATIC,7,20,40,8
+    LTEXT           "High Accuracy Mode: ",IDC_STATIC,112,20,70,8
+    LTEXT           "Stereo Depth*:\n\n\n*Does Not Affect GYM/VGM/SPC",IDC_STATIC,15,45,152,36
+    CONTROL         "",IDC_ACCURACY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,180,20,16,10
+    EDITTEXT        IDC_SAMPLERATE,47,19,52,13,ES_AUTOHSCROLL
+    CONTROL         "",IDC_DEPTH,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,65,41,100,24
+    PUSHBUTTON      "Save Config",IDC_SAVECONFIG,7,79,50,14
+    PUSHBUTTON      "Load Config",IDC_LOADCONFIG,57,79,50,14
+    DEFPUSHBUTTON   "OK",IDOK,107,79,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,157,79,50,14
 END
 
 
@@ -107,6 +125,25 @@ BEGIN
     "#include ""afxres.h""\r\n"
 END
 
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_CONFIGDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 93
+    END
+END
 #endif    // APSTUDIO_INVOKED
 
 #endif    // English (U.S.) resources

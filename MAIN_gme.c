@@ -98,9 +98,9 @@ In_Module mod =
 {
 	IN_VER,	// defined in IN2.H
 #ifdef DEBUG
-	"Game_Music_Emu Winamp Plugin v0.10.1 DEBUG"
+	"Game_Music_Emu Winamp Plugin v0.10.2 DEBUG"
 #else
-	"Game_Music_Emu Winamp Plugin v0.10.1"
+	"Game_Music_Emu Winamp Plugin v0.10.2"
 #endif
 	,
 	0,	// hMainWindow (filled in by winamp)
