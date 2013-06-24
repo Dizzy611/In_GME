@@ -1,12 +1,12 @@
 In_GME
 ======
 
-Installer now available for public testing! Please be aware this is still very much an early alpha. 
-If that's okay with you, Click "In_GME_v0_09.exe" then "Raw" to download.
+This experimental branch is not ready for public testing, thus no installer is provided.
+Please move back to the master branch if you want to test.
 
 Winamp Plugin for Game-Music-Emu
 
-Current Version: v0.09 Alpha
+Current Version: v0.10.1 Experimental
 
 In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of
 license in MAIN_gme.c
@@ -19,6 +19,9 @@ Sega Genesis YM2612 emulator copyright (C) 2002 Stephane Dallongeville, released
 the LGPL.
 
 Changelog:
+ - Changes from v0.09 to v0.10.1
+   - First version of experimental branch including custom dialog boxes and windows resources.
+     v0.11 will be the final release of said branch and will be pulled to master.
  - Changes from v0.08 to v0.09
    - Fixed a small bug in the track listing for NSFs.
  - Changes from v0.07 to v0.08

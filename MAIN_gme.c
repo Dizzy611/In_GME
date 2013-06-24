@@ -98,15 +98,9 @@ In_Module mod =
 {
 	IN_VER,	// defined in IN2.H
 #ifdef DEBUG
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.09 DEBUG "
+	"Game_Music_Emu Winamp Plugin v0.10.1 DEBUG"
 #else
-	"Game_Music_Emu 0.6.0 Winamp Plugin v0.09 "
-#endif
-	// winamp runs on both alpha systems and x86 ones. :)
-#ifdef __alpha
-	"(AXP)"
-#else
-	"(x86)"
+	"Game_Music_Emu Winamp Plugin v0.10.1"
 #endif
 	,
 	0,	// hMainWindow (filled in by winamp)
@@ -149,6 +143,31 @@ In_Module mod =
 };
 
 
+INT_PTR CALLBACK AboutDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg)
+  {
+    case WM_COMMAND:
+    {
+      switch (LOWORD(wParam))
+      {
+        case IDOK:
+        case IDCANCEL:
+        {
+          EndDialog(hwndDlg, (INT_PTR) LOWORD(wParam));
+          return (INT_PTR) TRUE;
+        }
+      }
+      break;
+    }
+
+    case WM_INITDIALOG:
+      return (INT_PTR) TRUE;
+  }
+
+  return (INT_PTR) FALSE;
+}
+
 void config(HWND hwndParent)
 {
 	MessageBox(hwndParent,
@@ -158,8 +177,8 @@ void config(HWND hwndParent)
 }
 void about(HWND hwndParent)
 {
-	MessageBox(hwndParent,"Game_Music_Emu 0.6.0 Winamp Plugin, Plugin by Dylan Morrison, Library by Blargg",
-		"About Game_Music_Emu Plugin",MB_OK);
+	DialogBox(mod.hDllInstance, MAKEINTRESOURCE(IDD_ABOUTDIALOG), hwndParent, &AboutDialogProc);
+	return;
 }
 
 #ifdef DEBUG
