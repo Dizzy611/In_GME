@@ -24,7 +24,7 @@
 
 #include "in2.h"
 #include "wa_ipc.h"
-
+#include "resource.h"
 #include "gme.h"
 
 // avoid CRT. Evil. Big. Bloated. Only uncomment this code if you are using 
