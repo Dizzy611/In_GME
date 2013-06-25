@@ -1,4 +1,6 @@
-rm in_gme_debug.dll *.o
-gcc -DDEBUG -I./libgme/include/gme/ -I./resources/ -I/c/Program\ Files\ \(x86\)/Winamp\ SDK/Winamp/ -g -c MAIN_gme.c
-g++ -mdll -static -static-libgcc -static-libstdc++ -L./libgme/lib/ MAIN_gme.o -lgme -g -o in_gme_debug.dll
-
+rm -f in_gme_debug.dll *.o ./resources/*.o
+gcc -I./zlib/include/ -g -c ./vgz/minigzip.c -o ./vgz/minigzip.o
+gcc -DDEBUG -I./libgme/include/gme/ -I./resources/ -I./vgz/ -I/c/Program\ Files\ \(x86\)/Winamp\ SDK/Winamp/ -g -c MAIN_gme.c
+windres -i ./resources/resource.rc -o ./resources/resource.o
+g++ -mdll -static -static-libgcc -static-libstdc++ -L./zlib/lib/ -L./libgme/lib/ ./vgz/minigzip.o MAIN_gme.o ./resources/resource.o -lgme -lz -o in_gme_debug.dll
+rm -f *.o ./resources/*.o

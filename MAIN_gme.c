@@ -21,11 +21,13 @@
 #include <windows.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 #include "in2.h"
 #include "wa_ipc.h"
 #include "resource.h"
 #include "gme.h"
+#include "minigzip.h"
 
 // avoid CRT. Evil. Big. Bloated. Only uncomment this code if you are using 
 // 'ignore default libraries' in VC++. Keeps DLL size way down.
@@ -46,7 +48,6 @@ BOOL WINAPI _DllMainCRTStartup(HANDLE hInst, ULONG ul_reason_for_call, LPVOID lp
 #define BPS 16
 
 char lastfn[MAX_PATH];	// currently playing file (used for getting info on the current file)
-
 int file_length;		// file length, in bytes
 int decode_pos_ms;		// current decoding position, in milliseconds. 
 						// Used for correcting DSP plug-in pitch changes
@@ -64,6 +65,7 @@ HANDLE thread_handle=INVALID_HANDLE_VALUE;	// the handle to the decode thread
 
 Music_Emu* emu;
 BOOL accurate;
+BOOL decompressing;
 DWORD WINAPI DecodeThread(LPVOID b); // the decode thread procedure
 
 // function definitions
@@ -105,7 +107,7 @@ In_Module mod =
 	,
 	0,	// hMainWindow (filled in by winamp)
 	0,  // hDllInstance (filled in by winamp)
-	"SPC\0SNES SPC700 Sound File (*.SPC)\0VGM\0Sega Genesis/MD/SMS/BBC Micro VGM File (*.VGM)\0AY\0ZX Spectrum/Amstrad CPC Sound File (*.AY)\0GBS\0Game Boy Sound File (*.GBS)\0HES\0TG-16/PC-Engine Sound File (*.HES)\0KSS\0MSX Sound File (*.KSS)\0NSF\0NES Sound File (*.NSF)\0SAP\0Atari Sound File (*.SAP)\0GYM\0Sega Genesis Sound File (*.GYM)\0"
+	"SPC\0SNES SPC700 Sound File (*.SPC)\0VGM\0Sega Genesis/MD/SMS/BBC Micro VGM File (*.VGM)\0VGZ\0Zipped VGM (*.VGZ)\0AY\0ZX Spectrum/Amstrad CPC Sound File (*.AY)\0GBS\0Game Boy Sound File (*.GBS)\0HES\0TG-16/PC-Engine Sound File (*.HES)\0KSS\0MSX Sound File (*.KSS)\0NSF\0NES Sound File (*.NSF)\0SAP\0Atari Sound File (*.SAP)\0GYM\0Sega Genesis Sound File (*.GYM)\0NSFE\0Extended NSF (*.NSFE)"
 	// this is a double-null limited list. "EXT\0Description\0EXT\0Description\0" etc.
 	,
 	1,	// is_seekable
@@ -192,7 +194,8 @@ void init() {
 	strftime(out, 9, "%Y%m%d", localtime(&now));
 	char filename[22];
 	sprintf(filename, "in_gme-debug-%s", out);
-	fp = fopen(filename, "w+");
+	fp = fopen(filename, "a");
+	debugmessage("LOG START");
 #endif
 	emu = NULL;
 	accurate = TRUE;
@@ -201,6 +204,7 @@ void init() {
 void debugmessage(char *message) {
 #ifdef DEBUG
 	fprintf(fp, "%s\n", message);
+	fflush(fp);
 #endif
 	return;
 }
@@ -224,7 +228,7 @@ int play(const char *fn)
 	debugmessage("FUNCTION: play()");
 	int maxlatency;
 	int thread_id;
-
+	decompressing=0;
 	// Grab a filehandle just to get the filesize. There's gotta be a better way to do this...
 	input_file = CreateFile(fn,GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE,NULL,
 		OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
@@ -237,6 +241,18 @@ int play(const char *fn)
 	
 	CloseHandle(input_file);		
 	
+	// Check if its a vgz
+	char *ext;
+	ext = strrchr(fn, '.');
+	ext += 1;
+	if ( strcmp(ext, "vgz") == 0 ) {
+		debugmessage("Found a VGZ file!");
+		char dest[MAX_PATH];
+		ExpandEnvironmentStrings("%temp%\\temp.vgm", dest, MAX_PATH);
+		simpleDecompress(fn, dest);
+		strcpy(fn, dest);
+		decompressing=1;
+	}
 	gme_err_t temperr = gme_open_file(fn,&emu,SAMPLERATE);
 	if (temperr != 0) // error opening file
 	{
@@ -355,6 +371,11 @@ void stop() {
 	
 
 	gme_delete(emu);
+	if (decompressing) {
+		char tempfile[MAX_PATH];
+		ExpandEnvironmentStrings("%temp%\\temp.vgm", tempfile, MAX_PATH);
+		remove(tempfile);
+	}
 	emu=NULL;
 	debugmessage("END FUNCTION: stop()");
 	return;
@@ -421,6 +442,18 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 		long temp_track_length;
 		temp_emu=NULL;
 		temp_track_info=NULL; // if we screw up we want this to show as a null pointer dereference so that we know exactly where and how
+		char *ext;
+		BOOL temp_decompressing=0;
+		ext = strrchr(filename, '.');
+		ext += 1;
+		if ( strcmp(ext, "vgz") == 0 ) {
+			debugmessage("Found a VGZ file!");
+			char dest[MAX_PATH];
+			ExpandEnvironmentStrings("%temp%\\temp-info.vgm", dest, MAX_PATH);
+			simpleDecompress(filename, dest);
+			strcpy(filename, dest);
+			temp_decompressing=1;
+		}
 		gme_open_file(filename,&temp_emu,SAMPLERATE);
 		gme_track_info(temp_emu,&temp_track_info,0);
 		temp_track_length = temp_track_info->length;
@@ -453,6 +486,9 @@ void getfileinfo(const char *filename, char *title, int *length_in_ms)
 		}
 		gme_free_info(temp_track_info);
 		gme_delete(temp_emu);
+		if ( temp_decompressing == 1 ) {
+			remove(filename);
+		}
 	}
 	debugmessage("END FUNCTION: getfileinfo()");
 }
