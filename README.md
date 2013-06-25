@@ -6,7 +6,7 @@ Please move back to the master branch if you want to test.
 
 Winamp Plugin for Game-Music-Emu
 
-Current Version: v0.10.2 Experimental
+Current Version: v0.10.3 Experimental
 
 In_GME copyright (C) 2013 Dylan J. Morrison, released under the ISC license, details of
 license in MAIN_gme.c
@@ -18,7 +18,12 @@ from the original) available at https://code.google.com/p/game-music-emu/.
 Sega Genesis YM2612 emulator copyright (C) 2002 Stephane Dallongeville, released under 
 the LGPL.
 
+zlib Copyright (C) 1995-2013 Jean-loup Gailly and Mark Adler
+
 Changelog:
+ - Changes from v0.10.2 to v0.10.3
+   - zlib is now included to facilitate loading VGZ files, which is done 
+     via a temporary file.
  - Changes from v0.10.1 to v0.10.2
    - About box tested and tweaked, config box implemented in resource 
      but not in code. resource.h pruned of redefined constants, 

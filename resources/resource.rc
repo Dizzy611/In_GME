@@ -36,8 +36,8 @@ IDI_APPICON             ICON                    "Application.ico"
 //
 
 1 VERSIONINFO
- FILEVERSION 0,1,0,1
- PRODUCTVERSION 0,1,0,1
+ FILEVERSION 0,1,0,3
+ PRODUCTVERSION 0,1,0,3
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x3L
@@ -54,12 +54,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Dylan Morrison"
             VALUE "FileDescription", "Game_Music_Emu plugin for WinAmp"
-            VALUE "FileVersion", "0, 1, 0, 2"
+            VALUE "FileVersion", "0, 1, 0, 3"
             VALUE "InternalName", "in_gme"
             VALUE "LegalCopyright", "©2013 Dylan Morrison"
             VALUE "OriginalFilename", "in_gme.dll"
             VALUE "ProductName", "in_gme Game_Music_Emu plugin"
-            VALUE "ProductVersion", "0, 1, 0, 2"
+            VALUE "ProductVersion", "0, 1, 0, 3"
         END
     END
     BLOCK "VarFileInfo"
@@ -80,7 +80,7 @@ CAPTION "About"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     ICON            IDI_APPICON,IDC_STATIC,7,7,20,20
-    LTEXT           "in_gme v0.10.2\nA Game_Music_Emu Plugin for Winamp\nBased on libgme 0.6.0",IDC_STATIC,34,7,185,30
+    LTEXT           "in_gme v0.10.3\nA Game_Music_Emu Plugin for Winamp\nBased on libgme 0.6.0",IDC_STATIC,34,7,185,30
     LTEXT           "©2013 Dylan Morrison",IDC_STATIC,34,39,68,8
     DEFPUSHBUTTON   "OK",IDOK,90,46,50,14,WS_GROUP
 END
